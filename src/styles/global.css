@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-ink: #1d2740;
+  --color-paper: #f5eedb;
+  --color-paper-deep: #eadfbf;
+  --color-fog: #fffbf1;
+  --color-sky: #bfe9ff;
+  --font-body: "Trebuchet MS", "Segoe UI", sans-serif;
+  --font-display: "Courier New", monospace;
+  --shadow-card: 0 18px 40px rgba(29, 39, 64, 0.12);
+  --shadow-soft: 0 22px 48px rgba(29, 39, 64, 0.14);
+  --shadow-air: 0 18px 50px rgba(34, 65, 92, 0.1);
+}
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  html {
+    @apply scroll-smooth bg-paper;
+  }
+
+  body {
+    @apply m-0 bg-paper font-body text-ink antialiased;
+    background-image:
+      radial-gradient(circle at top left, rgba(255, 255, 255, 0.82), transparent 28%),
+      linear-gradient(180deg, #fffaf0 0%, #f5eedb 52%, #efe6ce 100%);
+  }
+
+  button,
+  input,
+  textarea {
+    font: inherit;
+  }
+
+  a {
+    @apply text-inherit no-underline;
+  }
+
+  #root {
+    @apply min-h-svh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  p {
+    margin: 0;
+  }
+}
+
+@layer utilities {
+  .home-cloud-drift {
+    animation: home-cloud-drift var(--cloud-duration, 24s) ease-in-out infinite;
+    animation-delay: var(--cloud-delay, 0s);
+    will-change: transform;
+  }
+
+  .editorial-title {
+    font-family: "MaisonNeue", Helvetica, sans-serif;
+  }
+}
+
+@keyframes home-cloud-drift {
+  0%,
+  100% {
+    transform: translate3d(calc(var(--cloud-drift, 16px) * -0.45), 0, 0);
+  }
+
+  50% {
+    transform: translate3d(var(--cloud-drift, 16px), 0, 0);
+  }
+}
