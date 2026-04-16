@@ -10,6 +10,18 @@ import mountainLayer from '../../../Components/RoadLayers/3landscape-mountains.p
 import { RSVP_ROUTE } from './navigation.constants';
 import type { HomeFooterLayerDepth, HomeSceneConfig } from '../types/site.types';
 
+export const HOME_SURFACE_TOKENS = {
+  skyColor: '#BFE9FF',
+  pageGlow:
+    'linear-gradient(180deg, rgba(191, 233, 255, 0.92) 0%, rgba(241, 248, 255, 0.82) 22%, rgba(255, 248, 224, 0.94) 70%, rgba(239, 230, 206, 1) 100%)',
+  horizonGlow:
+    'radial-gradient(circle at 50% 78%, rgba(255, 242, 196, 0.6), rgba(255, 242, 196, 0) 38%)',
+  mistGlow:
+    'radial-gradient(circle at top left, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0) 28%)',
+  cardClassName: 'bg-[rgba(255,250,240,0.82)] backdrop-blur-md',
+  outlineClassName: 'border border-white/45 shadow-[0_24px_60px_rgba(29,39,64,0.12)]',
+} as const;
+
 const HOME_FOOTER_LAYER_HEIGHTS: Record<
   HomeFooterLayerDepth,
   {

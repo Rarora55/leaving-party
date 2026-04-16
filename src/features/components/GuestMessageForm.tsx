@@ -3,6 +3,8 @@ import { Button } from '../../shared/components/Button/Button';
 import { Input } from '../../shared/components/Input/Input';
 import { PixelCard } from '../../shared/components/PixelCard/PixelCard';
 import { TextArea } from '../../shared/components/TextArea/TextArea';
+import { cn } from '../../shared/utils/cn';
+import { MESSAGE_PAGE_CONTENT } from '../../shared/constants/events.constants';
 
 interface GuestMessageFormProps {
   guestName: string;
@@ -12,6 +14,7 @@ interface GuestMessageFormProps {
     guestName?: string;
     message?: string;
   };
+  isKeyboardOpen: boolean;
   onGuestNameChange: (value: string) => void;
   onMessageChange: (value: string) => void;
   onSubmit: () => Promise<boolean>;
@@ -24,6 +27,7 @@ export function GuestMessageForm({
   message,
   maxLength,
   errors,
+  isKeyboardOpen,
   onGuestNameChange,
   onMessageChange,
   onSubmit,
@@ -36,72 +40,63 @@ export function GuestMessageForm({
   };
 
   return (
-    <PixelCard className="bg-white/78">
-      <form className="space-y-5" onSubmit={handleSubmit}>
-        <div className="space-y-3">
-          <h2 className="font-display text-2xl uppercase tracking-[0.12em] text-ink">
-            Leave a note
-          </h2>
-          <p className="font-body text-base leading-7 text-ink/68">
-            Keep it short, warm, and ready to sit on the public wall.
-          </p>
-        </div>
+    <PixelCard
+      className={cn(
+        'border border-ink/15 bg-paper/95 shadow-soft backdrop-blur-md',
+        isKeyboardOpen ? 'max-h-[75svh] overflow-y-auto' : '',
+      )}
+    >
+      <form
+        className="space-y-5"
+        onSubmit={handleSubmit}
+        aria-label={MESSAGE_PAGE_CONTENT.formTitle}
+      >
+        <h2 className="font-display text-2xl uppercase tracking-[0.12em] text-ink">
+          {MESSAGE_PAGE_CONTENT.formTitle}
+        </h2>
 
         <div className="space-y-2">
           <label
             htmlFor="message-name"
             className="font-display text-[0.68rem] uppercase tracking-[0.32em] text-ink/55"
           >
-            Your name
+            {MESSAGE_PAGE_CONTENT.nameLabel}
           </label>
           <Input
             id="message-name"
             name="message-name"
-            placeholder="Type your name"
+            placeholder={MESSAGE_PAGE_CONTENT.namePlaceholder}
             value={guestName}
             onChange={(event) => onGuestNameChange(event.target.value)}
             aria-invalid={Boolean(errors.guestName)}
             aria-describedby={errors.guestName ? 'message-name-error' : undefined}
           />
           {errors.guestName ? (
-            <p
-              id="message-name-error"
-              className="text-sm text-[#842434]"
-              role="alert"
-            >
+            <p id="message-name-error" className="text-sm text-[#842434]" role="alert">
               {errors.guestName}
             </p>
           ) : null}
         </div>
 
         <div className="space-y-2">
-          <div className="flex items-center justify-between gap-3">
-            <label
-              htmlFor="message-text"
-              className="font-display text-[0.68rem] uppercase tracking-[0.32em] text-ink/55"
-            >
-              Your message
-            </label>
-            <span className="font-display text-[0.66rem] uppercase tracking-[0.26em] text-ink/40">
-              {message.trim().length}/{maxLength}
-            </span>
-          </div>
+          <label
+            htmlFor="message-text"
+            className="font-display text-[0.68rem] uppercase tracking-[0.32em] text-ink/55"
+          >
+            {MESSAGE_PAGE_CONTENT.messageLabel}
+          </label>
           <TextArea
             id="message-text"
             name="message-text"
             maxLength={maxLength}
-            placeholder="We will miss you already..."
+            placeholder={MESSAGE_PAGE_CONTENT.messagePlaceholder}
             value={message}
             onChange={(event) => onMessageChange(event.target.value)}
             aria-invalid={Boolean(errors.message)}
             aria-describedby={errors.message ? 'message-text-error' : undefined}
           />
           {errors.message ? (
-            <p
-              id="message-text-error"
-              className="text-sm text-[#842434]"
-              role="alert"
-            >
+            <p id="message-text-error" className="text-sm text-[#842434]" role="alert">
               {errors.message}
             </p>
           ) : null}
@@ -118,7 +113,7 @@ export function GuestMessageForm({
         ) : null}
 
         <Button className="w-full" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Publishing…' : 'Publish message'}
+          {isSubmitting ? MESSAGE_PAGE_CONTENT.submittingLabel : MESSAGE_PAGE_CONTENT.submitLabel}
         </Button>
       </form>
     </PixelCard>

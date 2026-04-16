@@ -150,6 +150,9 @@ export interface RsvpEntry {
   createdAt: string;
 }
 
+export type RSVPStatus = 'confirmed' | 'pending';
+export type RSVPNotificationStatus = 'pending' | 'sent' | 'retry_required';
+
 export interface GuestMessageEntry {
   id: string;
   name: string;
@@ -163,7 +166,28 @@ export interface RSVPSubmission {
   name: string;
   confirmedAt: string;
   createdAt: string;
-  status: 'confirmed' | 'pending';
+  status: RSVPStatus;
+  notificationStatus: RSVPNotificationStatus;
+  notificationRecipient: string;
+  notificationAttempts: number;
+  notificationLastAttemptAt: string | null;
+  notificationSentAt: string | null;
+  notificationError: string | null;
+}
+
+export interface LatestConfirmationItem {
+  id: string;
+  name: string;
+  confirmedAt: string;
+  createdAt: string;
+}
+
+export interface RSVPNotificationState {
+  status: RSVPNotificationStatus;
+  message?: string;
+  attemptedAt?: string | null;
+  attemptCount?: number;
+  error?: string | null;
 }
 
 export interface RSVPFormInput {
@@ -177,6 +201,7 @@ export interface RSVPFormState {
   isSubmitting: boolean;
   isSuccess: boolean;
   successMessage: string;
+  notificationMessage: string | null;
 }
 
 export interface RSVPSubmissionRequest {
@@ -187,6 +212,13 @@ export interface RSVPSubmissionResponse {
   success: boolean;
   data?: RSVPSubmission;
   error?: string;
+  notification: RSVPNotificationState;
+}
+
+export interface LatestConfirmationsState {
+  items: LatestConfirmationItem[];
+  isLoading: boolean;
+  error: string | null;
 }
 
 export interface GuestMessageSubmission {

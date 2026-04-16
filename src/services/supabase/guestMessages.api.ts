@@ -3,12 +3,16 @@
  * Handles all guest message submission and retrieval operations via Supabase
  */
 
-import { supabase, isSupabaseConfigured, getSupabaseErrorMessage } from './client';
+import { getSupabaseConfigurationIssue, supabase, isSupabaseConfigured, getSupabaseErrorMessage } from './client';
 import type {
     GuestMessageSubmission,
     GuestMessageSubmissionRequest,
     GuestMessageSubmissionResponse,
 } from '../../shared/types/site.types';
+
+const MAX_GUEST_NAME_LENGTH = 100;
+const MAX_MESSAGE_LENGTH = 500;
+const LETTER_OR_NUMBER_PATTERN = /[\p{L}\p{N}]/u;
 
 /**
  * Submit a guest message to the database
@@ -21,27 +25,52 @@ export const submitGuestMessage = async (
     try {
         // Check if Supabase is properly configured
         if (!isSupabaseConfigured()) {
+            console.error(
+                'Supabase configuration missing during guest message submission:',
+                getSupabaseConfigurationIssue() ?? 'Unknown Supabase configuration issue.',
+            );
             return {
                 success: false,
-                error: 'Supabase is not configured. Please set environment variables.',
+                error: 'Sorry, message posting is temporarily unavailable. Please try again later.',
             };
         }
 
         // Trim and validate guest name
         const trimmedName = request.guestName.trim();
-        if (!trimmedName || trimmedName.length < 1 || trimmedName.length > 100) {
+        if (!trimmedName) {
             return {
                 success: false,
-                error: 'Please enter a valid name (1-100 characters).',
+                error: 'Please enter your name.',
+            };
+        }
+
+        if (trimmedName.length > MAX_GUEST_NAME_LENGTH) {
+            return {
+                success: false,
+                error: `Please keep your name under ${MAX_GUEST_NAME_LENGTH} characters.`,
+            };
+        }
+
+        if (!LETTER_OR_NUMBER_PATTERN.test(trimmedName)) {
+            return {
+                success: false,
+                error: 'Include at least one letter or number in your name.',
             };
         }
 
         // Trim and validate message
         const trimmedMessage = request.message.trim();
-        if (!trimmedMessage || trimmedMessage.length < 1 || trimmedMessage.length > 500) {
+        if (!trimmedMessage) {
             return {
                 success: false,
-                error: 'Please enter a valid message (1-500 characters).',
+                error: 'Please enter a message.',
+            };
+        }
+
+        if (trimmedMessage.length > MAX_MESSAGE_LENGTH) {
+            return {
+                success: false,
+                error: `Please keep your message under ${MAX_MESSAGE_LENGTH} characters.`,
             };
         }
 
@@ -99,7 +128,10 @@ export const submitGuestMessage = async (
 export const fetchGuestMessages = async (): Promise<GuestMessageSubmission[]> => {
     try {
         if (!isSupabaseConfigured()) {
-            console.warn('Supabase is not configured. Cannot fetch messages.');
+            console.warn(
+                'Supabase configuration missing when fetching guest messages:',
+                getSupabaseConfigurationIssue() ?? 'Unknown Supabase configuration issue.',
+            );
             return [];
         }
 

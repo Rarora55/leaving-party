@@ -110,7 +110,7 @@ export interface StorageItem<T> {
 export const getStorageSize = (): number => {
   let size = 0;
   for (const key in localStorage) {
-    if (localStorage.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
       size += localStorage[key].length + key.length;
     }
   }

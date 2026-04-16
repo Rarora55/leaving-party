@@ -18,9 +18,43 @@ export const SITE_COPY = {
     homeIntro:
         'A farewell invitation told as a scrolling pixel-art journey, with room for one last ride.',
     rsvpIntro:
-        'Keep it simple: add your name, save it locally, and mark yourself in for the send-off.',
-    messageIntro:
-        'Leave a short note for the wall. Each message lands instantly on this playful local-first board.',
+        'A quick yes is all it takes. Add your name and we will save your place in the send-off.',
+} as const;
+
+export const MESSAGE_PAGE_CONTENT = {
+    wallTitle: 'Empty wall',
+    wallLoading: 'Loading messages...',
+    wallErrorFallback: 'The wall is taking a break. Please try again in a moment.',
+    formTitle: 'Leave a note',
+    nameLabel: 'Your name',
+    messageLabel: 'Your message',
+    namePlaceholder: 'Type your name',
+    messagePlaceholder: 'We will miss you already...',
+    submitLabel: 'Publish message',
+    submittingLabel: 'Publishing...',
+    successLabel: 'Your message is on the wall!',
+} as const;
+
+export const RSVP_PAGE_CONTENT = {
+    eyebrow: '9th of May, 2026 - Blackhorse Road',
+    title: 'Are You Coming?',
+    intro: 'Unit 10, Uplands Business Park, Blackhorse Ln, London E17 5QJ',
+    formTitle: 'Say your name!',
+    formDescription: 'We really want to say goodbye to everyone, so we hope you can make it.',
+    nameLabel: 'Who?',
+    namePlaceholder: 'Type your name',
+    submitLabel: 'Yeah!!',
+    submittingLabel: 'Submitting...',
+    latestTitle: 'Who was the last one?',
+    latestDescription: 'Hello...',
+    latestEmptyState: 'No confirmations yet. Be the first to say yes.',
+    successMessage: "THANK YOU! We'll see you there.",
+} as const;
+
+export const RSVP_NOTIFICATION_CONFIG = {
+    functionName: 'send-rsvp-notification',
+    sourceLabel: 'We Are Leaving website RSVP',
+    emailSubjectPrefix: 'New RSVP submission from website',
 } as const;
 
 // ============================================================================

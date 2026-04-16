@@ -23,7 +23,7 @@ export function GuestMessageCard({ index, message }: GuestMessageCardProps) {
     <PixelCard
       style={rotationStyle}
       className={cn(
-        'w-full max-w-sm flex-1 basis-[18rem] transition-transform hover:-translate-y-1',
+        'w-full max-w-sm flex-1 basis-[18rem] border-ink/12 shadow-soft transition-transform hover:-translate-y-1',
         offsetClassName,
         cardColor,
       )}
@@ -39,7 +39,7 @@ export function GuestMessageCard({ index, message }: GuestMessageCardProps) {
           </p>
         </div>
         <span className="rounded-full border border-ink/10 bg-white/55 px-3 py-1 font-display text-[0.58rem] uppercase tracking-[0.28em] text-ink/50">
-          Message
+          Note
         </span>
       </div>
       <p className="mt-5 font-body text-base leading-7 text-ink/80">{message.message}</p>

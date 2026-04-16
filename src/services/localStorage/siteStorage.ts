@@ -6,7 +6,6 @@
 import {
   MESSAGE_STORAGE_KEY,
   MESSAGE_VARIANTS,
-  RSVP_STORAGE_KEY,
   STORAGE_KEYS,
   STORAGE_RETENTION,
   isStorageItemExpired,
@@ -15,7 +14,6 @@ import type { StorageItem } from '../../shared/constants/storage.constants';
 import type {
   GuestMessageEntry,
   MessageStyleVariant,
-  RsvpEntry,
   NavigationOverlayState,
   HomeSceneState,
   RSVPFormState,
@@ -59,32 +57,6 @@ function writeCollection<T>(key: string, value: T[]) {
   }
 
   window.localStorage.setItem(key, JSON.stringify(value));
-}
-
-// ============================================================================
-// Legacy Storage Functions (for backward compatibility)
-// ============================================================================
-
-export function readRsvpList(): RsvpEntry[] {
-  return readCollection<RsvpEntry>(RSVP_STORAGE_KEY);
-}
-
-export function writeRsvpList(list: RsvpEntry[]) {
-  writeCollection(RSVP_STORAGE_KEY, list);
-}
-
-export function addRsvpEntry(name: string): RsvpEntry {
-  const entry: RsvpEntry = {
-    id: createId(),
-    name,
-    createdAt: new Date().toISOString(),
-  };
-
-  const list = readRsvpList();
-  list.push(entry);
-  writeRsvpList(list);
-
-  return entry;
 }
 
 export function readMessageList(): GuestMessageEntry[] {
@@ -323,22 +295,6 @@ export const loadLastRoute = (): string | null => {
 
 function selectMessageVariant(index: number): MessageStyleVariant {
   return MESSAGE_VARIANTS[index % MESSAGE_VARIANTS.length];
-}
-
-export function readRsvps() {
-  return readCollection<RsvpEntry>(RSVP_STORAGE_KEY);
-}
-
-export function appendRsvp(name: string) {
-  const currentEntries = readRsvps();
-  const nextEntry: RsvpEntry = {
-    id: createId(),
-    name,
-    createdAt: new Date().toISOString(),
-  };
-
-  writeCollection(RSVP_STORAGE_KEY, [nextEntry, ...currentEntries]);
-  return nextEntry;
 }
 
 export function readGuestMessages() {

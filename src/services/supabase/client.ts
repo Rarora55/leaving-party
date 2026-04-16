@@ -1,10 +1,11 @@
-/**
- * Supabase Client Initialization
- * Provides a configured Supabase client for API calls and real-time features
- */
-
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { ENV } from '../../shared/config/env';
+import {
+    ENV,
+    getSupabaseConfigurationIssue as getSupabaseConfigurationIssueFromEnv,
+    getSupabaseUserFacingUnavailableMessage,
+    isEnvironmentConfigured,
+} from '../../shared/config/env';
+import type { RSVPNotificationStatus, RSVPStatus } from '../../shared/types/site.types';
 
 /**
  * Type definition for Supabase database schema
@@ -19,18 +20,37 @@ export interface Database {
                     name: string;
                     confirmed_at: string;
                     created_at: string;
-                    status: 'confirmed' | 'pending';
+                    status: RSVPStatus;
+                    notification_status: RSVPNotificationStatus;
+                    notification_recipient: string;
+                    notification_attempts: number;
+                    notification_last_attempt_at: string | null;
+                    notification_sent_at: string | null;
+                    notification_error: string | null;
                 };
                 Insert: {
                     name: string;
                     confirmed_at?: string;
-                    status?: 'confirmed' | 'pending';
+                    status?: RSVPStatus;
+                    notification_status?: RSVPNotificationStatus;
+                    notification_recipient?: string;
+                    notification_attempts?: number;
+                    notification_last_attempt_at?: string | null;
+                    notification_sent_at?: string | null;
+                    notification_error?: string | null;
                 };
                 Update: {
                     name?: string;
                     confirmed_at?: string;
-                    status?: 'confirmed' | 'pending';
+                    status?: RSVPStatus;
+                    notification_status?: RSVPNotificationStatus;
+                    notification_recipient?: string;
+                    notification_attempts?: number;
+                    notification_last_attempt_at?: string | null;
+                    notification_sent_at?: string | null;
+                    notification_error?: string | null;
                 };
+                Relationships: [];
             };
             guest_messages: {
                 Row: {
@@ -50,23 +70,38 @@ export interface Database {
                     message?: string;
                     approved?: boolean;
                 };
+                Relationships: [];
             };
         };
-        Views: {};
-        Functions: {};
-        Enums: {};
-        CompositeTypes: {};
+        Views: Record<string, never>;
+        Functions: {
+            send_rsvp_notification: {
+                Args: {
+                    rsvp_id: string;
+                    guest_name?: string;
+                };
+                Returns: {
+                    success: boolean;
+                    notificationStatus: RSVPNotificationStatus;
+                    attemptedAt: string;
+                    attemptCount: number;
+                    error?: string;
+                };
+            };
+        };
+        Enums: Record<string, never>;
+        CompositeTypes: Record<string, never>;
     };
 }
 
-const SUPABASE_IS_CONFIGURED = !!ENV.supabaseUrl && !!ENV.supabaseAnonKey;
+const SUPABASE_IS_CONFIGURED = isEnvironmentConfigured();
 
 /**
  * Initialize and export Supabase client
  * If environment variables are missing, we avoid creating the client so
  * the app can still render without Supabase features.
  */
-export const supabase: SupabaseClient | null = SUPABASE_IS_CONFIGURED
+export const supabase: SupabaseClient<Database> | null = SUPABASE_IS_CONFIGURED
     ? createClient(
         ENV.supabaseUrl,
         ENV.supabaseAnonKey,
@@ -89,6 +124,12 @@ export const isSupabaseConfigured = (): boolean => {
     return SUPABASE_IS_CONFIGURED;
 };
 
+export const getSupabaseConfigurationIssue = (): string | null => {
+    return getSupabaseConfigurationIssueFromEnv();
+};
+
+export { getSupabaseUserFacingUnavailableMessage };
+
 /**
  * Helper function to handle Supabase errors
  */
@@ -100,4 +141,84 @@ export const getSupabaseErrorMessage = (error: unknown): string => {
         return (error as Record<string, unknown>).message as string;
     }
     return 'An unexpected error occurred';
+};
+
+type SupabaseErrorLike = {
+    message?: string;
+    code?: string;
+    details?: string;
+    hint?: string;
+    status?: number;
+};
+
+export type SupabaseErrorCategory =
+    | 'permission'
+    | 'schema'
+    | 'network'
+    | 'configuration'
+    | 'unknown';
+
+export interface SupabaseErrorDiagnostics {
+    category: SupabaseErrorCategory;
+    message: string;
+    code: string | null;
+    details: string | null;
+    hint: string | null;
+    status: number | null;
+}
+
+function toSupabaseErrorLike(error: unknown): SupabaseErrorLike {
+    if (typeof error === 'object' && error !== null) {
+        return error as SupabaseErrorLike;
+    }
+
+    if (error instanceof Error) {
+        return { message: error.message };
+    }
+
+    return {};
+}
+
+function classifySupabaseError(errorLike: SupabaseErrorLike): SupabaseErrorCategory {
+    const code = errorLike.code?.toUpperCase();
+    const message = (errorLike.message || '').toLowerCase();
+    const details = (errorLike.details || '').toLowerCase();
+    const hint = (errorLike.hint || '').toLowerCase();
+    const combined = `${message} ${details} ${hint}`;
+
+    if (code === '42501' || combined.includes('row-level security') || combined.includes('permission denied')) {
+        return 'permission';
+    }
+
+    if (code === '42P01' || combined.includes('does not exist') || combined.includes('relation')) {
+        return 'schema';
+    }
+
+    if (code === 'PGRST301' || combined.includes('jwt') || combined.includes('apikey')) {
+        return 'configuration';
+    }
+
+    if (
+        combined.includes('failed to fetch') ||
+        combined.includes('network') ||
+        combined.includes('timeout') ||
+        combined.includes('fetch')
+    ) {
+        return 'network';
+    }
+
+    return 'unknown';
+}
+
+export const getSupabaseErrorDiagnostics = (error: unknown): SupabaseErrorDiagnostics => {
+    const errorLike = toSupabaseErrorLike(error);
+
+    return {
+        category: classifySupabaseError(errorLike),
+        message: getSupabaseErrorMessage(error),
+        code: errorLike.code ?? null,
+        details: errorLike.details ?? null,
+        hint: errorLike.hint ?? null,
+        status: errorLike.status ?? null,
+    };
 };

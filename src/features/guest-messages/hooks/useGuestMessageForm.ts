@@ -11,7 +11,11 @@ import {
     saveMessageFormData,
 } from '../../../services/localStorage/siteStorage';
 import type { GuestMessageFormState } from '../../../shared/types/site.types';
-import { dispatchCustomEvent, CUSTOM_EVENTS } from '../../../shared/constants/events.constants';
+import {
+    dispatchCustomEvent,
+    CUSTOM_EVENTS,
+    MESSAGE_PAGE_CONTENT,
+} from '../../../shared/constants/events.constants';
 import {
     sanitizeMessageGuestName,
     sanitizeMessageText,
@@ -46,20 +50,20 @@ const SUCCESS_MESSAGE_DURATION = 3000;
  * - Success/error message display
  */
 export const useGuestMessageForm = () => {
-    const [formState, setFormState] = useState<GuestMessageFormState>(initialFormState);
-    const [successTimeout, setSuccessTimeout] = useState<number | null>(null);
-
-    // Load persisted form data on mount
-    useEffect(() => {
+    const [formState, setFormState] = useState<GuestMessageFormState>(() => {
         const savedFormData = loadMessageFormData();
-        if (savedFormData && (savedFormData.guestName || savedFormData.message)) {
-            setFormState((prev) => ({
-                ...prev,
-                guestName: savedFormData.guestName,
-                message: savedFormData.message,
-            }));
+
+        if (!savedFormData || (!savedFormData.guestName && !savedFormData.message)) {
+            return initialFormState;
         }
-    }, []);
+
+        return {
+            ...initialFormState,
+            guestName: savedFormData.guestName,
+            message: savedFormData.message,
+        };
+    });
+    const [successTimeout, setSuccessTimeout] = useState<number | null>(null);
 
     /**
      * Update guest name field
@@ -151,7 +155,7 @@ export const useGuestMessageForm = () => {
             });
 
             if (response.success) {
-                const successMsg = 'Your message is on the wall!';
+                const successMsg = MESSAGE_PAGE_CONTENT.successLabel;
 
                 setFormState((prev) => ({
                     ...prev,
@@ -206,7 +210,7 @@ export const useGuestMessageForm = () => {
 
                 return false;
             }
-        } catch (error) {
+        } catch {
             const errorMsg = 'An unexpected error occurred. Please try again.';
 
             setFormState((prev) => ({

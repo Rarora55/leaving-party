@@ -18,6 +18,14 @@
     @apply box-border;
   }
 
+  :root {
+    --message-composer-z-index: 45;
+    --message-composer-max-width: 72rem;
+    --message-composer-page-gap: 1rem;
+    --message-composer-safe-bottom: env(safe-area-inset-bottom, 0px);
+    --message-composer-estimated-height: 26rem;
+  }
+
   html {
     @apply scroll-smooth bg-paper;
   }
@@ -53,6 +61,24 @@
 }
 
 @layer utilities {
+  .message-wall-safe-padding {
+    padding-bottom: calc(
+      var(--message-composer-estimated-height) + var(--message-composer-safe-bottom)
+    );
+  }
+
+  .message-composer-shell {
+    left: 0;
+    right: 0;
+    z-index: var(--message-composer-z-index);
+    padding-inline: var(--message-composer-page-gap);
+  }
+
+  .message-composer-inner {
+    margin-inline: auto;
+    max-width: var(--message-composer-max-width);
+  }
+
   .home-cloud-drift {
     animation: home-cloud-drift var(--cloud-duration, 24s) ease-in-out infinite;
     animation-delay: var(--cloud-delay, 0s);

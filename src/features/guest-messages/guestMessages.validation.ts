@@ -1,160 +1,91 @@
 /**
- * Guest Messages Validation Utilities
- * Provides validation functions for message form input
+ * Guest message validation utilities.
  */
 
-/**
- * Validation error messages
- */
+export const MESSAGE_NAME_MIN_LENGTH = 1;
+export const MESSAGE_NAME_MAX_LENGTH = 100;
+export const MESSAGE_MAX_LENGTH = 500;
+
+const UNICODE_LETTER_OR_NUMBER_PATTERN = /[\p{L}\p{N}]/u;
+
 export const MESSAGE_VALIDATION_MESSAGES = {
-    nameRequired: 'Please enter your name.',
-    nameInvalid: 'Please enter a valid name (1-100 characters, non-whitespace).',
-    nameTooShort: 'Name must be at least 1 character long.',
-    nameTooLong: 'Name must be no more than 100 characters.',
-    messageRequired: 'Please enter a message.',
-    messageInvalid: 'Please enter a valid message (1-500 characters, non-whitespace).',
-    messageTooShort: 'Message must be at least 1 character long.',
-    messageTooLong: 'Message must be no more than 500 characters.',
+  nameRequired: 'Please enter your name.',
+  nameTooLong: `Please keep your name under ${MESSAGE_NAME_MAX_LENGTH} characters.`,
+  nameNeedsLetterOrNumber: 'Include at least one letter or number in your name.',
+  messageRequired: 'Please enter a message.',
+  messageTooLong: `Please keep your message under ${MESSAGE_MAX_LENGTH} characters.`,
 } as const;
 
-/**
- * Validation rules for message submission
- */
 export const MESSAGE_VALIDATION_RULES = {
-    guestName: {
-        minLength: 1,
-        maxLength: 100,
-        pattern: /\S/, // Must contain at least one non-whitespace character
-    },
-    message: {
-        minLength: 1,
-        maxLength: 500,
-        pattern: /\S/, // Must contain at least one non-whitespace character
-    },
+  guestName: {
+    minLength: MESSAGE_NAME_MIN_LENGTH,
+    maxLength: MESSAGE_NAME_MAX_LENGTH,
+  },
+  message: {
+    minLength: MESSAGE_NAME_MIN_LENGTH,
+    maxLength: MESSAGE_MAX_LENGTH,
+  },
 } as const;
 
-/**
- * Validate message guest name
- * @param name - The guest name to validate
- * @returns { valid: boolean; error?: string }
- */
-export const validateMessageGuestName = (name: string): { valid: boolean; error?: string } => {
-    const trimmedName = name.trim();
+export const containsUnicodeLetterOrNumber = (value: string): boolean =>
+  UNICODE_LETTER_OR_NUMBER_PATTERN.test(value);
 
-    if (!trimmedName || trimmedName.length === 0) {
-        return {
-            valid: false,
-            error: MESSAGE_VALIDATION_MESSAGES.nameRequired,
-        };
-    }
+export const validateMessageGuestName = (
+  name: string,
+): { valid: boolean; error?: string } => {
+  const trimmedName = name.trim();
 
-    const { minLength, maxLength } = MESSAGE_VALIDATION_RULES.guestName;
-    if (trimmedName.length < minLength) {
-        return {
-            valid: false,
-            error: MESSAGE_VALIDATION_MESSAGES.nameTooShort,
-        };
-    }
+  if (!trimmedName) {
+    return { valid: false, error: MESSAGE_VALIDATION_MESSAGES.nameRequired };
+  }
 
-    if (trimmedName.length > maxLength) {
-        return {
-            valid: false,
-            error: MESSAGE_VALIDATION_MESSAGES.nameTooLong,
-        };
-    }
+  if (trimmedName.length > MESSAGE_NAME_MAX_LENGTH) {
+    return { valid: false, error: MESSAGE_VALIDATION_MESSAGES.nameTooLong };
+  }
 
-    if (!MESSAGE_VALIDATION_RULES.guestName.pattern.test(trimmedName)) {
-        return {
-            valid: false,
-            error: MESSAGE_VALIDATION_MESSAGES.nameInvalid,
-        };
-    }
+  if (!containsUnicodeLetterOrNumber(trimmedName)) {
+    return { valid: false, error: MESSAGE_VALIDATION_MESSAGES.nameNeedsLetterOrNumber };
+  }
 
-    return { valid: true };
+  return { valid: true };
 };
 
-/**
- * Validate message text
- * @param message - The message to validate
- * @returns { valid: boolean; error?: string }
- */
 export const validateMessageText = (message: string): { valid: boolean; error?: string } => {
-    const trimmedMessage = message.trim();
+  const trimmedMessage = message.trim();
 
-    if (!trimmedMessage || trimmedMessage.length === 0) {
-        return {
-            valid: false,
-            error: MESSAGE_VALIDATION_MESSAGES.messageRequired,
-        };
-    }
+  if (!trimmedMessage) {
+    return { valid: false, error: MESSAGE_VALIDATION_MESSAGES.messageRequired };
+  }
 
-    const { minLength, maxLength } = MESSAGE_VALIDATION_RULES.message;
-    if (trimmedMessage.length < minLength) {
-        return {
-            valid: false,
-            error: MESSAGE_VALIDATION_MESSAGES.messageTooShort,
-        };
-    }
+  if (trimmedMessage.length > MESSAGE_MAX_LENGTH) {
+    return { valid: false, error: MESSAGE_VALIDATION_MESSAGES.messageTooLong };
+  }
 
-    if (trimmedMessage.length > maxLength) {
-        return {
-            valid: false,
-            error: MESSAGE_VALIDATION_MESSAGES.messageTooLong,
-        };
-    }
-
-    if (!MESSAGE_VALIDATION_RULES.message.pattern.test(trimmedMessage)) {
-        return {
-            valid: false,
-            error: MESSAGE_VALIDATION_MESSAGES.messageInvalid,
-        };
-    }
-
-    return { valid: true };
+  return { valid: true };
 };
 
-/**
- * Validate complete message submission
- * @param guestName - Guest name
- * @param message - Message text
- * @returns { valid: boolean; errors: { guestName?: string; message?: string } }
- */
 export const validateMessageSubmission = (
-    guestName: string,
-    message: string,
+  guestName: string,
+  message: string,
 ): { valid: boolean; errors: { guestName?: string; message?: string } } => {
-    const errors: { guestName?: string; message?: string } = {};
+  const errors: { guestName?: string; message?: string } = {};
 
-    const nameValidation = validateMessageGuestName(guestName);
-    if (!nameValidation.valid) {
-        errors.guestName = nameValidation.error;
-    }
+  const guestNameValidation = validateMessageGuestName(guestName);
+  if (!guestNameValidation.valid) {
+    errors.guestName = guestNameValidation.error;
+  }
 
-    const messageValidation = validateMessageText(message);
-    if (!messageValidation.valid) {
-        errors.message = messageValidation.error;
-    }
+  const messageValidation = validateMessageText(message);
+  if (!messageValidation.valid) {
+    errors.message = messageValidation.error;
+  }
 
-    return {
-        valid: Object.keys(errors).length === 0,
-        errors,
-    };
+  return {
+    valid: Object.keys(errors).length === 0,
+    errors,
+  };
 };
 
-/**
- * Sanitize guest name input
- * @param name - Raw input name
- * @returns Sanitized name
- */
-export const sanitizeMessageGuestName = (name: string): string => {
-    return name.trim();
-};
+export const sanitizeMessageGuestName = (name: string): string => name.trim();
 
-/**
- * Sanitize message text input
- * @param message - Raw input message
- * @returns Sanitized message
- */
-export const sanitizeMessageText = (message: string): string => {
-    return message.trim();
-};
+export const sanitizeMessageText = (message: string): string => message.trim();
