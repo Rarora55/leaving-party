@@ -1,5 +1,5 @@
-export type NavigationId = 'home' | 'messages' | 'rsvp';
-export type NavigationRoute = '/' | '/are-you-coming' | '/drop-a-message';
+export type NavigationId = string;
+export type NavigationRoute = '/' | `/${string}`;
 export type MessageStyleVariant = 'lilac' | 'mint' | 'peach' | 'sky' | 'sun';
 export type CloudDepth = 'far' | 'mid' | 'near';
 export type HomeFooterLayerId =
@@ -15,14 +15,14 @@ export type HomeFooterSceneCtaPlacement =
 
 export interface NavigationItem {
   key: NavigationId;
-  label: 'Are You Coming?' | 'Drop a Message' | 'Home';
+  label: string;
   description: string;
   path: NavigationRoute;
 }
 
 export interface NavigationDestination {
   id: NavigationId;
-  label: 'Are You Coming?' | 'Drop a Message' | 'Home';
+  label: string;
   route: NavigationRoute;
   order: number;
 }
@@ -36,6 +36,72 @@ export interface NavigationOverlayState {
   scrollPositionBeforeOpen: number;
   activeRoute?: string;
   focusedDestinationIndex?: number;
+}
+
+export type HalfMileBreweryId =
+  | 'exale'
+  | 'signature-brew'
+  | 'hackney-church-brew-co'
+  | 'pretty-decent-beer-co'
+  | '40ft-brewery';
+
+export type HalfMileCardPlacement = 'top' | 'right' | 'bottom' | 'left';
+
+export interface HalfMileHotspotAnchor {
+  xPercent: number;
+  yPercent: number;
+  radiusPxMobile: number;
+  radiusPxDesktop: number;
+}
+
+export interface HalfMileBrewery {
+  id: HalfMileBreweryId;
+  name: string;
+  websiteUrl: string;
+  hotspot: HalfMileHotspotAnchor;
+  cardPlacement: HalfMileCardPlacement;
+}
+
+export interface HalfMileCloudSeed {
+  id: string;
+  assetSrc: string;
+  width: string;
+  opacity: number;
+  minXPercent: number;
+  maxXPercent: number;
+  minYPercent: number;
+  maxYPercent: number;
+  zIndex: number;
+}
+
+export interface HalfMileCloudPlacement {
+  id: string;
+  assetSrc: string;
+  width: string;
+  opacity: number;
+  xPercent: number;
+  yPercent: number;
+  zIndex: number;
+}
+
+export interface HalfMileSceneCTA {
+  id: 'home';
+  label: 'Back Home';
+  route: NavigationRoute;
+  ariaLabel: string;
+  bottomOffsetMobile: number;
+  bottomOffsetDesktop: number;
+  maxWidth: string;
+}
+
+export interface HalfMileSceneConfig {
+  mapAssetSrc: string;
+  mapAlt: string;
+  mapTopMargin: string;
+  mapBottomMargin: string;
+  clouds: readonly HalfMileCloudSeed[];
+  breweries: readonly HalfMileBrewery[];
+  cta: HalfMileSceneCTA;
 }
 
 export interface HomeCloudLayer {
