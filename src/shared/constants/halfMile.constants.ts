@@ -8,6 +8,16 @@ import blackhorseMap from '../../../Components/Map/BlackhorseMap.webp';
 import { HOME_ROUTE } from './navigation.constants';
 import type { HalfMileSceneConfig } from '../types/site.types';
 
+export const HALF_MILE_SURFACE_TOKENS = {
+  skyColor: '#BFE9FF',
+  pageGlow:
+    'linear-gradient(180deg, rgba(191, 233, 255, 0.96) 0%, rgba(184, 226, 250, 0.95) 52%, rgba(176, 218, 245, 1) 100%)',
+  mistGlow:
+    'radial-gradient(circle at top left, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0) 28%)',
+  horizonGlow:
+    'radial-gradient(circle at 50% 78%, rgba(173, 216, 244, 0.62), rgba(173, 216, 244, 0) 40%)',
+} as const;
+
 export const HALF_MILE_SCENE_CONFIG: HalfMileSceneConfig = {
   mapAssetSrc: blackhorseMap,
   mapAlt: 'The Half Mile brewery map with interactive hotspot markers.',
@@ -92,15 +102,27 @@ export const HALF_MILE_SCENE_CONFIG: HalfMileSceneConfig = {
   ],
   breweries: [
     {
+      id: 'east-london-brewing-co',
+      name: 'East London Brewing Co',
+      websiteUrl: 'https://www.eastlondonbrewing.com/pages/blackhorse-road',
+      cardPlacement: 'bottom',
+      hotspot: {
+        xPercent: 40.9,
+        yPercent: 10.5,
+        radiusPxMobile: 14,
+        radiusPxDesktop: 16,
+      },
+    },
+    {
       id: 'exale',
       name: 'Exale',
       websiteUrl: 'https://www.exale.uk/',
       cardPlacement: 'right',
       hotspot: {
-        xPercent: 35.5,
-        yPercent: 30.5,
-        radiusPxMobile: 19,
-        radiusPxDesktop: 24,
+        xPercent: 47.8,
+        yPercent: 27.4,
+        radiusPxMobile: 14,
+        radiusPxDesktop: 16,
       },
     },
     {
@@ -109,10 +131,10 @@ export const HALF_MILE_SCENE_CONFIG: HalfMileSceneConfig = {
       websiteUrl: 'https://www.signaturebrew.co.uk/password',
       cardPlacement: 'right',
       hotspot: {
-        xPercent: 35.5,
-        yPercent: 47.5,
-        radiusPxMobile: 20,
-        radiusPxDesktop: 26,
+        xPercent: 35.3,
+        yPercent: 43.5,
+        radiusPxMobile: 14,
+        radiusPxDesktop: 16,
       },
     },
     {
@@ -121,10 +143,10 @@ export const HALF_MILE_SCENE_CONFIG: HalfMileSceneConfig = {
       websiteUrl: 'https://prettydecentbeer.co/',
       cardPlacement: 'left',
       hotspot: {
-        xPercent: 59.5,
-        yPercent: 43.5,
-        radiusPxMobile: 20,
-        radiusPxDesktop: 26,
+        xPercent: 48.1,
+        yPercent: 39.9,
+        radiusPxMobile: 14,
+        radiusPxDesktop: 16,
       },
     },
     {
@@ -133,10 +155,10 @@ export const HALF_MILE_SCENE_CONFIG: HalfMileSceneConfig = {
       websiteUrl: 'https://hackneychurchbrew.co/',
       cardPlacement: 'left',
       hotspot: {
-        xPercent: 67.5,
-        yPercent: 59.5,
-        radiusPxMobile: 22,
-        radiusPxDesktop: 28,
+        xPercent: 55.9,
+        yPercent: 53.4,
+        radiusPxMobile: 14,
+        radiusPxDesktop: 16,
       },
     },
     {
@@ -145,11 +167,12 @@ export const HALF_MILE_SCENE_CONFIG: HalfMileSceneConfig = {
       websiteUrl: 'https://40ftbrewery.com/',
       cardPlacement: 'bottom',
       hotspot: {
-        xPercent: 57.5,
-        yPercent: 11.5,
-        radiusPxMobile: 20,
-        radiusPxDesktop: 24,
+        xPercent: 50.8,
+        yPercent: 9.5,
+        radiusPxMobile: 14,
+        radiusPxDesktop: 16,
       },
+
     },
   ],
 } as const;

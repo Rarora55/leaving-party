@@ -9,10 +9,12 @@ import type {
     GuestMessageSubmissionRequest,
     GuestMessageSubmissionResponse,
 } from '../../shared/types/site.types';
+import { logErrorOnce, logWarnOnce } from '../../shared/utils/logOnce';
 
 const MAX_GUEST_NAME_LENGTH = 100;
 const MAX_MESSAGE_LENGTH = 500;
 const LETTER_OR_NUMBER_PATTERN = /[\p{L}\p{N}]/u;
+let guestMessagesInFlight: Promise<GuestMessageSubmission[]> | null = null;
 
 /**
  * Submit a guest message to the database
@@ -25,7 +27,8 @@ export const submitGuestMessage = async (
     try {
         // Check if Supabase is properly configured
         if (!isSupabaseConfigured()) {
-            console.error(
+            logWarnOnce(
+                'guest-message-submit-config-missing',
                 'Supabase configuration missing during guest message submission:',
                 getSupabaseConfigurationIssue() ?? 'Unknown Supabase configuration issue.',
             );
@@ -92,7 +95,7 @@ export const submitGuestMessage = async (
             .single();
 
         if (error) {
-            console.error('Message submission error:', error);
+            logErrorOnce('guest-message-submit-query-failed', 'Message submission error:', error);
             return {
                 success: false,
                 error: getSupabaseErrorMessage(error),
@@ -113,7 +116,7 @@ export const submitGuestMessage = async (
             data: submission,
         };
     } catch (error) {
-        console.error('Unexpected error during message submission:', error);
+        logErrorOnce('guest-message-submit-unexpected', 'Unexpected error during message submission:', error);
         return {
             success: false,
             error: 'An unexpected error occurred. Please try again.',
@@ -126,43 +129,54 @@ export const submitGuestMessage = async (
  * @returns Array of approved guest messages
  */
 export const fetchGuestMessages = async (): Promise<GuestMessageSubmission[]> => {
-    try {
-        if (!isSupabaseConfigured()) {
-            console.warn(
-                'Supabase configuration missing when fetching guest messages:',
-                getSupabaseConfigurationIssue() ?? 'Unknown Supabase configuration issue.',
-            );
-            return [];
-        }
-
-        if (!supabase) {
-            throw new Error('Supabase client not initialized');
-        }
-
-        const client = supabase as NonNullable<typeof supabase>;
-
-        const { data, error } = await client
-            .from('guest_messages')
-            .select('*')
-            .eq('approved', true)
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            console.error('Error fetching messages:', error);
-            return [];
-        }
-
-        return (data || []).map((row) => ({
-            id: row.id,
-            guestName: row.guest_name,
-            message: row.message,
-            approved: row.approved,
-            createdAt: row.created_at,
-        }));
-    } catch (error) {
-        console.error('Unexpected error fetching messages:', error);
-        return [];
+    if (guestMessagesInFlight) {
+        return guestMessagesInFlight;
     }
+
+    guestMessagesInFlight = (async () => {
+        try {
+            if (!isSupabaseConfigured()) {
+                logWarnOnce(
+                    'guest-message-fetch-config-missing',
+                    'Supabase configuration missing when fetching guest messages:',
+                    getSupabaseConfigurationIssue() ?? 'Unknown Supabase configuration issue.',
+                );
+                return [];
+            }
+
+            if (!supabase) {
+                throw new Error('Supabase client not initialized');
+            }
+
+            const client = supabase as NonNullable<typeof supabase>;
+
+            const { data, error } = await client
+                .from('guest_messages')
+                .select('*')
+                .eq('approved', true)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                logErrorOnce('guest-message-fetch-query-failed', 'Error fetching messages:', error);
+                return [];
+            }
+
+            return (data || []).map((row) => ({
+                id: row.id,
+                guestName: row.guest_name,
+                message: row.message,
+                approved: row.approved,
+                createdAt: row.created_at,
+            }));
+        } catch (error) {
+            logErrorOnce('guest-message-fetch-unexpected', 'Unexpected error fetching messages:', error);
+            return [];
+        } finally {
+            guestMessagesInFlight = null;
+        }
+    })();
+
+    return guestMessagesInFlight;
 };
 
 /**
@@ -187,13 +201,13 @@ export const getMessageCount = async (): Promise<number> => {
             .eq('approved', true);
 
         if (error) {
-            console.error('Error fetching message count:', error);
+            logErrorOnce('guest-message-count-query-failed', 'Error fetching message count:', error);
             return 0;
         }
 
         return count || 0;
     } catch (error) {
-        console.error('Unexpected error fetching message count:', error);
+        logErrorOnce('guest-message-count-unexpected', 'Unexpected error fetching message count:', error);
         return 0;
     }
 };
@@ -211,7 +225,7 @@ export const subscribeToMessages = (
     }
 
     if (!supabase) {
-        console.error('Supabase client not initialized');
+        logWarnOnce('guest-message-subscribe-client-null', 'Supabase client not initialized');
         return () => { };
     }
 

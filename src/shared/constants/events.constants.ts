@@ -22,10 +22,10 @@ export const SITE_COPY = {
 } as const;
 
 export const MESSAGE_PAGE_CONTENT = {
-    wallTitle: 'Empty wall',
+    wallTitle: 'The wall',
     wallLoading: 'Loading messages...',
     wallErrorFallback: 'The wall is taking a break. Please try again in a moment.',
-    formTitle: 'Leave a note',
+    formTitle: 'We will buy a beer to the best comment',
     nameLabel: 'Your name',
     messageLabel: 'Your message',
     namePlaceholder: 'Type your name',
@@ -40,12 +40,12 @@ export const RSVP_PAGE_CONTENT = {
     title: 'Are You Coming?',
     intro: 'Unit 10, Uplands Business Park, Blackhorse Ln, London E17 5QJ',
     formTitle: 'Say your name!',
-    formDescription: 'We really want to say goodbye to everyone, so we hope you can make it.',
+    formDescription: 'We really want to say goodbye to everyone, so we hope you can make it. Basically the plan is complete the mile of beers un blackhorse road, join us in any momento, we will be drunks anyway...',
     nameLabel: 'Who?',
     namePlaceholder: 'Type your name',
     submitLabel: 'Yeah!!',
-    submittingLabel: 'Submitting...',
-    latestTitle: 'Who was the last one?',
+    submittingLabel: 'Guapos...',
+    latestTitle: 'The most guapos',
     latestDescription: 'Hello...',
     latestEmptyState: 'No confirmations yet. Be the first to say yes.',
     successMessage: "THANK YOU! We'll see you there.",

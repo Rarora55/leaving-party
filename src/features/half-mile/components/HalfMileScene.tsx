@@ -4,7 +4,10 @@ import {
   HOME_NAVIGATION_OVERLAY_TOKENS,
   HOME_SURFACE_TOKENS,
 } from '../../../shared/constants/home.constants';
-import { HALF_MILE_SCENE_CONFIG } from '../../../shared/constants/halfMile.constants';
+import {
+  HALF_MILE_SCENE_CONFIG,
+  HALF_MILE_SURFACE_TOKENS,
+} from '../../../shared/constants/halfMile.constants';
 import { cn } from '../../../shared/utils/cn';
 import { HalfMileHotspots } from './HalfMileHotspots';
 import { generateHalfMileCloudPlacements } from './halfMileCloud.utils';
@@ -25,8 +28,11 @@ export function HalfMileScene() {
       aria-label="The Half Mile map scene"
       data-testid="half-mile-scene"
       style={{
-        backgroundColor: HOME_SURFACE_TOKENS.skyColor,
-        backgroundImage: [HOME_SURFACE_TOKENS.mistGlow, HOME_SURFACE_TOKENS.pageGlow].join(','),
+        backgroundColor: HALF_MILE_SURFACE_TOKENS.skyColor,
+        backgroundImage: [
+          HALF_MILE_SURFACE_TOKENS.mistGlow,
+          HALF_MILE_SURFACE_TOKENS.pageGlow,
+        ].join(','),
       }}
     >
       <div
@@ -37,7 +43,7 @@ export function HalfMileScene() {
       <div
         className="pointer-events-none absolute inset-x-0 bottom-0 h-[40svh]"
         aria-hidden="true"
-        style={{ backgroundImage: HOME_SURFACE_TOKENS.horizonGlow }}
+        style={{ backgroundImage: HALF_MILE_SURFACE_TOKENS.horizonGlow }}
       />
 
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
@@ -66,7 +72,7 @@ export function HalfMileScene() {
         ))}
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-[1100px]">
+      <div className="relative z-10 mx-auto flow-root w-full max-w-[1100px]">
         <div className={cn(HALF_MILE_SCENE_CONFIG.mapTopMargin, HALF_MILE_SCENE_CONFIG.mapBottomMargin)}>
           <div
             className="relative mx-auto w-full"

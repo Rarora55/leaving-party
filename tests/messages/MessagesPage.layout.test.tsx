@@ -61,8 +61,8 @@ describe('MessagesPage layout', () => {
 
     const regions = screen.getAllByRole('region');
     expect(regions).toHaveLength(2);
-    expect(regions[0]).toHaveAccessibleName('Empty wall');
-    expect(regions[1]).toHaveAccessibleName('Leave a note');
+    expect(regions[0]).toHaveAccessibleName('The wall');
+    expect(regions[1]).toHaveAccessibleName('We will buy a beer to the best comment');
   });
 
   it('removes legacy message page copy and helper modules', () => {

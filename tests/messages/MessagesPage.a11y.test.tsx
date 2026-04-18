@@ -91,7 +91,7 @@ describe('MessagesPage accessibility states', () => {
 
     renderPage();
 
-    const formHeading = screen.getByRole('heading', { name: 'Leave a note' });
+    const formHeading = screen.getByRole('heading', { name: 'We will buy a beer to the best comment' });
     expect(formHeading.closest('div')).toHaveClass('max-h-[75svh]');
   });
 });

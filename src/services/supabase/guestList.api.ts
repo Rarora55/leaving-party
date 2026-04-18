@@ -14,11 +14,13 @@ import {
   isSupabaseConfigured,
   supabase,
 } from './client';
+import { logErrorOnce, logWarnOnce } from '../../shared/utils/logOnce';
 import type { Database } from './client';
 
 type GuestRsvpRow = Database['public']['Tables']['guest_rsvps']['Row'];
 
 const MAX_RSVP_NAME_LENGTH = 100;
+const latestConfirmationsInFlightByLimit = new Map<number, Promise<LatestConfirmationItem[]>>();
 const DEFAULT_NOTIFICATION_STATE: RSVPNotificationState = {
   status: 'pending',
 };
@@ -165,7 +167,8 @@ export async function submitRSVP(
 ): Promise<RSVPSubmissionResponse> {
   try {
     if (!isSupabaseConfigured()) {
-      console.error(
+      logErrorOnce(
+        'rsvp-submit-config-missing',
         'Supabase configuration missing during RSVP submission:',
         getSupabaseConfigurationIssue() ?? 'Unknown Supabase configuration issue.',
       );
@@ -187,7 +190,7 @@ export async function submitRSVP(
     }
 
     if (!supabase) {
-      console.error('Supabase client could not initialize during RSVP submission:', {
+      logErrorOnce('rsvp-submit-client-null', 'Supabase client could not initialize during RSVP submission:', {
         issue: getSupabaseConfigurationIssue() ?? 'Unknown Supabase configuration issue.',
       });
 
@@ -213,7 +216,7 @@ export async function submitRSVP(
 
     if (error) {
       const diagnostics = getSupabaseErrorDiagnostics(error);
-      console.error('RSVP insert failed:', {
+      logErrorOnce('rsvp-insert-failed', 'RSVP insert failed:', {
         diagnostics,
         table: 'guest_rsvps',
         payloadShape: {
@@ -255,7 +258,7 @@ export async function submitRSVP(
     };
   } catch (error) {
     const diagnostics = getSupabaseErrorDiagnostics(error);
-    console.error('Unexpected RSVP submission failure:', diagnostics);
+    logErrorOnce('rsvp-submit-unexpected', 'Unexpected RSVP submission failure:', diagnostics);
     return {
       success: false,
       error: getSafeRsvpErrorMessageForCategory(diagnostics.category),
@@ -267,40 +270,53 @@ export async function submitRSVP(
 export async function fetchLatestConfirmedRSVPs(
   limit = 3,
 ): Promise<LatestConfirmationItem[]> {
-  try {
-    if (!isSupabaseConfigured()) {
-      console.warn(
-        'Supabase configuration missing when fetching latest RSVPs:',
-        getSupabaseConfigurationIssue() ?? 'Unknown Supabase configuration issue.',
-      );
-
-      return [];
-    }
-
-    if (!supabase) {
-      console.warn('Supabase client could not initialize when fetching latest RSVPs:', {
-        issue: getSupabaseConfigurationIssue() ?? 'Unknown Supabase configuration issue.',
-      });
-
-      return [];
-    }
-
-    const { data, error } = await supabase
-      .from('guest_rsvps')
-      .select('*')
-      .eq('status', 'confirmed')
-      .order('confirmed_at', { ascending: false })
-      .order('created_at', { ascending: false })
-      .limit(limit);
-
-    if (error) {
-      console.error('Error fetching latest RSVPs:', error);
-      return [];
-    }
-
-    return (data || []).map(mapLatestConfirmation);
-  } catch (error) {
-    console.error('Unexpected error fetching latest RSVPs:', error);
-    return [];
+  const pendingRequest = latestConfirmationsInFlightByLimit.get(limit);
+  if (pendingRequest) {
+    return pendingRequest;
   }
+
+  const requestPromise = (async () => {
+    try {
+      if (!isSupabaseConfigured()) {
+        logWarnOnce(
+          'latest-rsvps-config-missing',
+          'Supabase configuration missing when fetching latest RSVPs:',
+          getSupabaseConfigurationIssue() ?? 'Unknown Supabase configuration issue.',
+        );
+
+        return [];
+      }
+
+      if (!supabase) {
+        logWarnOnce('latest-rsvps-client-null', 'Supabase client could not initialize when fetching latest RSVPs:', {
+          issue: getSupabaseConfigurationIssue() ?? 'Unknown Supabase configuration issue.',
+        });
+
+        return [];
+      }
+
+      const { data, error } = await supabase
+        .from('guest_rsvps')
+        .select('*')
+        .eq('status', 'confirmed')
+        .order('confirmed_at', { ascending: false })
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) {
+        logErrorOnce('latest-rsvps-query-failed', 'Error fetching latest RSVPs:', error);
+        return [];
+      }
+
+      return (data || []).map(mapLatestConfirmation);
+    } catch (error) {
+      logErrorOnce('latest-rsvps-unexpected', 'Unexpected error fetching latest RSVPs:', error);
+      return [];
+    } finally {
+      latestConfirmationsInFlightByLimit.delete(limit);
+    }
+  })();
+
+  latestConfirmationsInFlightByLimit.set(limit, requestPromise);
+  return requestPromise;
 }

@@ -101,6 +101,19 @@ export function HomeTitleReveal({
         >
           {config.date}
         </motion.p>
+        <motion.p
+          className="text-balance text-center font-medium leading-tight"
+          style={{
+            color: config.subtitleColor,
+            fontSize: `clamp(${config.subtitleSizeMobile}px, 2.6vw, ${config.subtitleSizeDesktop}px)`,
+            letterSpacing: '-0.01em',
+            marginTop: config.subtitleSpacingPx,
+            opacity: dateOpacity,
+            y: dateY,
+          }}
+        >
+          {config.subtitle}
+        </motion.p>
       </div>
     </div>
   );

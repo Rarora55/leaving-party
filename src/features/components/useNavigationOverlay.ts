@@ -11,21 +11,31 @@ export const useNavigationOverlay = () => {
   const lockBodyScroll = useCallback(() => {
     document.body.style.overflow = 'hidden';
     document.body.style.touchAction = 'none';
+    document.documentElement.style.overflow = 'hidden';
   }, []);
 
   const unlockBodyScroll = useCallback(() => {
     document.body.style.overflow = '';
     document.body.style.touchAction = '';
+    document.documentElement.style.overflow = '';
   }, []);
 
   const openOverlay = useCallback(() => {
+    if (isOpen) {
+      return;
+    }
+
     scrollPositionBeforeOpen.current = window.scrollY || document.documentElement.scrollTop;
     setIsOpen(true);
     lockBodyScroll();
-  }, [lockBodyScroll]);
+  }, [isOpen, lockBodyScroll]);
 
   const closeOverlay = useCallback(
-    (options: CloseOverlayOptions = {}) => {
+    (options: CloseOverlayOptions = { restoreScroll: false }) => {
+      if (!isOpen) {
+        return;
+      }
+
       setIsOpen(false);
       unlockBodyScroll();
 
@@ -33,7 +43,7 @@ export const useNavigationOverlay = () => {
         window.scrollTo(0, scrollPositionBeforeOpen.current);
       }
     },
-    [unlockBodyScroll],
+    [isOpen, unlockBodyScroll],
   );
 
   const toggleOverlay = useCallback(() => {

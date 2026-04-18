@@ -2,9 +2,11 @@
  * Environment Variables Configuration
  * Provides typed access to environment variables with defaults and validation
  */
+import { logWarnOnce } from '../utils/logOnce';
 
 export const SUPABASE_REQUIRED_ENV_KEYS = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY'] as const;
 export const SUPABASE_ALTERNATE_CLIENT_KEY_ENV_KEYS = ['VITE_SUPABASE_PUBLISHABLE_KEY'] as const;
+export const SUPABASE_FORBIDDEN_CLIENT_KEY_PREFIXES = ['sb_secret_'] as const;
 
 export type SupabaseEnvKey = (typeof SUPABASE_REQUIRED_ENV_KEYS)[number];
 
@@ -56,6 +58,18 @@ const isValidSupabaseUrl = (value: string): boolean => {
     }
 };
 
+const looksLikeServerOnlySupabaseKey = (value: string): boolean => {
+    const normalized = value.trim().toLowerCase();
+    return SUPABASE_FORBIDDEN_CLIENT_KEY_PREFIXES.some((prefix) => normalized.startsWith(prefix));
+};
+
+const resolveEnvironmentMode = (mode: string | undefined): EnvironmentConfig['env'] => {
+    if (mode === 'production' || mode === 'staging') {
+        return mode;
+    }
+    return 'development';
+};
+
 const collectSupabaseEnvironmentProblems = (
     supabaseUrl?: string,
     supabaseAnonKey?: string,
@@ -79,6 +93,12 @@ const collectSupabaseEnvironmentProblems = (
             key: 'VITE_SUPABASE_ANON_KEY',
             message:
                 'A Supabase client key is missing. Define VITE_SUPABASE_ANON_KEY or VITE_SUPABASE_PUBLISHABLE_KEY.',
+        });
+    } else if (looksLikeServerOnlySupabaseKey(supabaseAnonKey)) {
+        problems.push({
+            key: 'VITE_SUPABASE_ANON_KEY',
+            message:
+                'A server-only Supabase key was detected in a client-visible VITE_* variable. Use only public anon or publishable keys in browser configuration.',
         });
     }
 
@@ -109,7 +129,7 @@ const describeSupabaseEnvironmentIssue = (
  * Load and validate environment variables
  */
 const loadEnvironmentConfig = (): EnvironmentConfig => {
-    const env = (import.meta.env.MODE || 'development') as EnvironmentConfig['env'];
+    const env = resolveEnvironmentMode(import.meta.env.MODE);
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
     const supabaseAnonKey =
         import.meta.env.VITE_SUPABASE_ANON_KEY?.trim() ||
@@ -121,7 +141,7 @@ const loadEnvironmentConfig = (): EnvironmentConfig => {
     const configurationIssue = describeSupabaseEnvironmentIssue(supabaseUrl, supabaseAnonKey);
 
     if (configurationIssue) {
-        console.warn(configurationIssue);
+        logWarnOnce('supabase-config-issue', configurationIssue);
     }
 
     return {

@@ -82,7 +82,8 @@ export function HalfMileHotspots({ breweries }: HalfMileHotspotsProps) {
               }
             }}
             className={cn(
-              'absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-0 bg-transparent outline-none',
+              'absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-black outline-none transition-colors duration-150',
+              isActive ? 'bg-red-500' : 'bg-red-500/30 hover:bg-cyan-100',
               'focus-visible:ring-2 focus-visible:ring-ink/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white/80',
             )}
             style={{

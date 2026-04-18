@@ -7,6 +7,8 @@ import cloud6 from '../../../Components/Clouds/6.png';
 import frontLayer from '../../../Components/RoadLayers/1landscape-front.png';
 import roadLayer from '../../../Components/RoadLayers/2landscape-road.png';
 import mountainLayer from '../../../Components/RoadLayers/3landscape-mountains.png';
+import fnmCharacters from '../../../Components/Characters/FnM.png';
+import vanCharacter from '../../../Components/Characters/Van.png';
 import { RSVP_ROUTE } from './navigation.constants';
 import type { HomeFooterLayerDepth, HomeSceneConfig } from '../types/site.types';
 
@@ -20,6 +22,14 @@ export const HOME_SURFACE_TOKENS = {
     'radial-gradient(circle at top left, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0) 28%)',
   cardClassName: 'bg-[rgba(255,250,240,0.82)] backdrop-blur-md',
   outlineClassName: 'border border-white/45 shadow-[0_24px_60px_rgba(29,39,64,0.12)]',
+} as const;
+
+export const HOME_NAVIGATION_OVERLAY_TOKENS = {
+  backgroundColor: HOME_SURFACE_TOKENS.skyColor,
+  backgroundImage: [HOME_SURFACE_TOKENS.mistGlow, HOME_SURFACE_TOKENS.pageGlow].join(','),
+  horizonGlow: HOME_SURFACE_TOKENS.horizonGlow,
+  topHighlight:
+    'radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 45%)',
 } as const;
 
 const HOME_FOOTER_LAYER_HEIGHTS: Record<
@@ -92,13 +102,18 @@ export const HOME_SCENE_CONFIG: HomeSceneConfig = {
   title: {
     title: 'We Are Leaving',
     date: '9th of May, 2026',
+    subtitle: "Let's do the mile of beers together!",
     fontFamily: '"MaisonNeue", Helvetica, sans-serif',
     textColor: '#000000',
+    subtitleColor: '#6b7280',
     titleSizeMobile: 48,
     titleSizeDesktop: 84,
     dateSizeMobile: 18,
     dateSizeDesktop: 24,
+    subtitleSizeMobile: 14,
+    subtitleSizeDesktop: 18,
     dateSpacingPx: 20,
+    subtitleSpacingPx: 12,
     titleRevealRange: [0.06, 0.28],
     dateRevealRange: [0.12, 0.34],
   },
@@ -124,6 +139,26 @@ export const HOME_SCENE_CONFIG: HomeSceneConfig = {
       bottomOffsetDesktop: 28,
       maxWidth: 'min(100%, 18rem)',
     },
+    characters: [
+      {
+        id: 'fnm',
+        label: 'Farewell party characters',
+        assetSrc: fnmCharacters,
+        leftPercent: 12,
+        bottomPercent: 1,
+        widthPercent: 16.5,
+        zIndex: 25,
+      },
+      {
+        id: 'van',
+        label: 'Camper van',
+        assetSrc: vanCharacter,
+        leftPercent: 32,
+        bottomPercent: -15,
+        widthPercent: 22.5,
+        zIndex: 15,
+      },
+    ],
     layers: [
       {
         id: '1Landscape-front',

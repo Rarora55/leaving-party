@@ -5,6 +5,7 @@ import {
     getSupabaseUserFacingUnavailableMessage,
     isEnvironmentConfigured,
 } from '../../shared/config/env';
+import { logWarnOnce } from '../../shared/utils/logOnce';
 import type { RSVPNotificationStatus, RSVPStatus } from '../../shared/types/site.types';
 
 /**
@@ -29,7 +30,9 @@ export interface Database {
                     notification_error: string | null;
                 };
                 Insert: {
+                    id?: string;
                     name: string;
+                    created_at?: string;
                     confirmed_at?: string;
                     status?: RSVPStatus;
                     notification_status?: RSVPNotificationStatus;
@@ -40,7 +43,9 @@ export interface Database {
                     notification_error?: string | null;
                 };
                 Update: {
+                    id?: string;
                     name?: string;
+                    created_at?: string;
                     confirmed_at?: string;
                     status?: RSVPStatus;
                     notification_status?: RSVPNotificationStatus;
@@ -95,6 +100,15 @@ export interface Database {
 }
 
 const SUPABASE_IS_CONFIGURED = isEnvironmentConfigured();
+const SUPABASE_CONFIGURATION_ISSUE = getSupabaseConfigurationIssueFromEnv();
+
+if (!SUPABASE_IS_CONFIGURED) {
+    logWarnOnce(
+        'supabase-client-disabled',
+        'Supabase client disabled due to invalid browser environment configuration:',
+        SUPABASE_CONFIGURATION_ISSUE ?? 'Unknown Supabase configuration issue.',
+    );
+}
 
 /**
  * Initialize and export Supabase client
@@ -125,7 +139,7 @@ export const isSupabaseConfigured = (): boolean => {
 };
 
 export const getSupabaseConfigurationIssue = (): string | null => {
-    return getSupabaseConfigurationIssueFromEnv();
+    return SUPABASE_CONFIGURATION_ISSUE;
 };
 
 export { getSupabaseUserFacingUnavailableMessage };

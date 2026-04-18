@@ -47,7 +47,7 @@ describe('GuestListPage layout', () => {
 
     expect(screen.getByRole('heading', { name: 'Are You Coming?' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Say your name!' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Who was the last one?' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'The most guapos' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Open the guest messages page' })).toBeInTheDocument();
     expect(screen.queryByText('Hosts')).not.toBeInTheDocument();
     expect(screen.queryByText('Confirmed on this device')).not.toBeInTheDocument();

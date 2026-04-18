@@ -39,6 +39,7 @@ export interface NavigationOverlayState {
 }
 
 export type HalfMileBreweryId =
+  | 'east-london-brewing-co'
   | 'exale'
   | 'signature-brew'
   | 'hackney-church-brew-co'
@@ -135,6 +136,16 @@ export interface HomeFooterSceneLayer {
   objectPosition: string;
 }
 
+export interface HomeFooterSceneCharacter {
+  id: string;
+  label: string;
+  assetSrc: string;
+  leftPercent: number;
+  bottomPercent: number;
+  widthPercent: number;
+  zIndex: number;
+}
+
 export interface HomeFooterSceneCTA {
   id: HomeFooterSceneCtaId;
   label: 'Are You Coming?';
@@ -150,13 +161,18 @@ export interface HomeFooterSceneCTA {
 export interface HomeTitleRevealConfig {
   title: 'We Are Leaving';
   date: '9th of May, 2026';
+  subtitle: string;
   fontFamily: string;
   textColor: string;
+  subtitleColor: string;
   titleSizeMobile: number;
   titleSizeDesktop: number;
   dateSizeMobile: number;
   dateSizeDesktop: number;
+  subtitleSizeMobile: number;
+  subtitleSizeDesktop: number;
   dateSpacingPx: number;
+  subtitleSpacingPx: number;
   titleRevealRange: readonly [number, number];
   dateRevealRange: readonly [number, number];
 }
@@ -173,6 +189,7 @@ export interface HomeFooterSceneConfig {
   frameWidthDesktop: string;
   frameWidthCompact: string;
   cta: HomeFooterSceneCTA;
+  characters: readonly HomeFooterSceneCharacter[];
   layers: readonly [
     HomeFooterSceneLayer,
     HomeFooterSceneLayer,

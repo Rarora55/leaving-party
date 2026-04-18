@@ -65,6 +65,21 @@ export function HomeFooterScene({
               motionMode={motionMode}
             />
           ))}
+          {config.characters.map((character) => (
+            <img
+              key={character.id}
+              src={character.assetSrc}
+              alt=""
+              aria-hidden="true"
+              className="pointer-events-none absolute select-none object-contain [image-rendering:pixelated] drop-shadow-[0_-8px_18px_rgba(20,16,10,0.2)]"
+              style={{
+                left: `${character.leftPercent}%`,
+                bottom: `${character.bottomPercent}%`,
+                width: `${character.widthPercent}%`,
+                zIndex: character.zIndex,
+              }}
+            />
+          ))}
           <div
             aria-hidden={!isInteractive}
             className={cn(

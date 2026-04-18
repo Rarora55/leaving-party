@@ -5,6 +5,15 @@ coverage/
 *.log
 .env
 .env.*
+!.env.example
+.pnpm-store/
+.npm/
+.cache/
+.turbo/
 .DS_Store
 Thumbs.db
 *.tmp
+*.temp
+.vscode/
+.idea/
+*.swp

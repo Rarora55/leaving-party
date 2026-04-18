@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { GuestMessageForm } from '../../features/components/GuestMessageForm';
 import { GuestMessagesList } from '../../features/components/GuestMessagesList';
 import { MESSAGE_MAX_LENGTH } from '../../features/guest-messages/guestMessages.validation';
@@ -6,6 +7,7 @@ import { useGuestMessageForm } from '../../features/guest-messages/hooks/useGues
 import { useMessageWall } from '../../features/guest-messages/hooks/useMessageWall';
 import { useStickyComposerViewport } from '../../features/guest-messages/hooks/useStickyComposerViewport';
 import { MESSAGE_PAGE_CONTENT } from '../../shared/constants/events.constants';
+import { THE_HALF_MILE_DESTINATION } from '../../shared/constants/navigation.constants';
 
 export function MessagesPage() {
   const {
@@ -99,6 +101,7 @@ export function MessagesPage() {
         ) : (
           <GuestMessagesList messages={cards} isEmpty={isEmpty} />
         )}
+
       </section>
 
       <section
@@ -119,6 +122,15 @@ export function MessagesPage() {
             successMessage={successMessage}
             isSubmitting={isSubmitting}
           />
+          <div className="mt-3 flex justify-center">
+            <Link
+              to={THE_HALF_MILE_DESTINATION.route}
+              aria-label="Open The Half Mile page"
+              className="inline-flex w-full max-w-[min(100%,18rem)] items-center justify-center rounded-full border border-ink/15 bg-paper/95 px-5 py-3 font-display text-[0.72rem] uppercase tracking-[0.24em] text-ink shadow-card backdrop-blur-sm transition duration-200 ease-out hover:-translate-y-0.5 hover:bg-white focus-visible:ring-2 focus-visible:ring-ink/25 focus-visible:ring-offset-2"
+            >
+              {THE_HALF_MILE_DESTINATION.label}
+            </Link>
+          </div>
         </div>
       </section>
     </main>
