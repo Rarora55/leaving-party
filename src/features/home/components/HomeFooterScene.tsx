@@ -57,7 +57,7 @@ export function HomeFooterScene({
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(191,233,255,0)_34%,rgba(235,244,234,0.14)_58%,rgba(245,217,159,0.2)_100%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_74%,rgba(255,247,214,0.28),rgba(255,247,214,0)_28%)]" />
       <div className="relative flex w-full items-end justify-center">
-        <div className="relative aspect-[4/1] w-[var(--footer-frame-width-mobile)] max-w-none sm:w-[var(--footer-frame-width-tablet)] lg:w-[var(--footer-frame-width-desktop)]">
+        <div className="relative aspect-[4/1] w-[var(--footer-frame-width-mobile)] max-w-none origin-bottom scale-[1.2] sm:scale-100 sm:w-[var(--footer-frame-width-tablet)] lg:w-[var(--footer-frame-width-desktop)]">
           {renderedLayers.map((layer) => (
             <HomeFooterLayer
               key={layer.id}
@@ -83,7 +83,7 @@ export function HomeFooterScene({
           <div
             aria-hidden={!isInteractive}
             className={cn(
-              'pointer-events-none absolute inset-x-0 bottom-[var(--footer-cta-offset-mobile)] z-40 flex px-4 sm:bottom-[var(--footer-cta-offset-tablet)] sm:px-6 lg:bottom-[var(--footer-cta-offset-desktop)] lg:px-10',
+              'pointer-events-none absolute inset-x-0 bottom-[var(--footer-cta-offset-mobile)] z-40 hidden px-4 sm:bottom-[var(--footer-cta-offset-tablet)] sm:flex sm:px-6 lg:bottom-[var(--footer-cta-offset-desktop)] lg:px-10',
               ctaPlacementClasses,
             )}
           >

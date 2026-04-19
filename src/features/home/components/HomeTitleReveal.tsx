@@ -1,5 +1,6 @@
 import { motion, useTransform } from 'motion/react';
 import type { MotionValue } from 'motion/react';
+import { Link } from 'react-router-dom';
 import { HOME_SCENE_CONFIG } from '../../../shared/constants/home.constants';
 import type { HomeTitleRevealConfig } from '../../../shared/types/site.types';
 
@@ -16,6 +17,7 @@ export function HomeTitleReveal({
   sceneProgress,
   shouldReduceMotion,
 }: HomeTitleRevealProps) {
+  const mobileCta = HOME_SCENE_CONFIG.footer.cta;
   const titleOpacity = useTransform(
     sceneProgress,
     [
@@ -114,6 +116,18 @@ export function HomeTitleReveal({
         >
           {config.subtitle}
         </motion.p>
+        <motion.div
+          className="mt-5 flex justify-center sm:hidden"
+          style={{ opacity: dateOpacity, y: dateY }}
+        >
+          <Link
+            to={mobileCta.route}
+            aria-label={mobileCta.ariaLabel}
+            className="pointer-events-auto inline-flex w-full max-w-[18rem] items-center justify-center rounded-full border border-ink/15 bg-paper/95 px-5 py-3 font-display text-[0.72rem] uppercase tracking-[0.24em] text-ink shadow-card backdrop-blur-sm transition duration-200 ease-out focus-visible:ring-2 focus-visible:ring-ink/25 focus-visible:ring-offset-2"
+          >
+            {mobileCta.label}
+          </Link>
+        </motion.div>
       </div>
     </div>
   );
