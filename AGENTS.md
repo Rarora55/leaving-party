@@ -1,6 +1,6 @@
 ﻿# Leaving-Party Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-04-18
+Auto-generated from all feature plans. Last updated: 2026-04-19
 
 ## Active Technologies
 - TypeScript + React + React, Vite, React Router, Tailwind CSS, Motion (002-fix-ui-navigation)
@@ -18,6 +18,8 @@ Auto-generated from all feature plans. Last updated: 2026-04-18
 - Static typed constants for map/cloud/hotspot/navigation configuration; no new Supabase or localStorage behavior (004-half-mile-page)
 - TypeScript 5.9, React 19.2 + React 19, Vite 8, React Router 7, Tailwind CSS 4, Motion 12, `@supabase/supabase-js`, Radix Dialog (existing only; no new runtime dependencies) (005-release-readiness-cleanup)
 - Supabase (`guest_rsvps`, `guest_messages`) plus browser `localStorage` for draft/temporary recovery; static typed constants and repository documentation files for release metadata (005-release-readiness-cleanup)
+- TypeScript 5.9, React 19.2 + React 19, Vite 8, React Router 7, Tailwind CSS 4, Motion 12, `@supabase/supabase-js` (existing only) (006-fix-mobile-ui)
+- Existing Supabase + localStorage integrations remain unchanged; new UI interaction states are ephemeral in component state only (006-fix-mobile-ui)
 
 - TypeScript + React 18+ + React, Vite, React Router v6+, Tailwind CSS, Motion (Framer Motion) (001-farewell-party-site)
 
@@ -38,9 +40,9 @@ npm test; npm run lint
 TypeScript + React 18+: Follow standard conventions
 
 ## Recent Changes
+- 006-fix-mobile-ui: Added TypeScript 5.9, React 19.2 + React 19, Vite 8, React Router 7, Tailwind CSS 4, Motion 12, `@supabase/supabase-js` (existing only)
 - 005-release-readiness-cleanup: Added TypeScript 5.9, React 19.2 + React 19, Vite 8, React Router 7, Tailwind CSS 4, Motion 12, `@supabase/supabase-js`, Radix Dialog (existing only; no new runtime dependencies)
 - 004-half-mile-page: Added TypeScript 5.9, React 19.2 + React 19, Vite 8, React Router 7, Tailwind CSS 4, Motion 12, Radix Dialog 1.1 (existing only)
-- 003-fix-navbar-interaction: Added TypeScript 5.9, React 19.2 + React 19, React Router 7, Tailwind CSS 4, Motion 12, Radix Dialog 1.1 (existing only)
 
 
 <!-- MANUAL ADDITIONS START -->

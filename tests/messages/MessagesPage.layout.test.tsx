@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MessagesPage } from '../../src/pages/MessagesPage/MessagesPages';
-import { createMessageCards } from './fixtures/messagePage.fixtures';
+import { createMessageCards, createStickyComposerViewport } from './fixtures/messagePage.fixtures';
 
 const useGuestMessageFormMock = vi.fn();
 const useMessageWallMock = vi.fn();
@@ -50,10 +50,7 @@ describe('MessagesPage layout', () => {
       reload: vi.fn(),
     });
 
-    useStickyComposerViewportMock.mockReturnValue({
-      composerBottom: 'calc(env(safe-area-inset-bottom, 0px) + 0px)',
-      keyboardInset: 0,
-    });
+    useStickyComposerViewportMock.mockReturnValue(createStickyComposerViewport());
   });
 
   it('renders exactly two primary sections in the required order', () => {
@@ -71,5 +68,23 @@ describe('MessagesPage layout', () => {
     expect(screen.queryByText('Drop a Message')).not.toBeInTheDocument();
     expect(screen.queryByText('Messages saved here')).not.toBeInTheDocument();
     expect(screen.queryByText('Character limit')).not.toBeInTheDocument();
+  });
+
+  it('keeps composer offset and wall padding aligned to keyboard inset', () => {
+    useStickyComposerViewportMock.mockReturnValue(
+      createStickyComposerViewport({
+        composerBottom: 'calc(env(safe-area-inset-bottom, 0px) + 260px)',
+        keyboardInset: 260,
+      }),
+    );
+
+    const { container } = renderPage();
+
+    const wallRegion = screen.getByRole('region', { name: 'The wall' });
+    const composerRegion = screen.getByRole('region', { name: 'We will buy a beer to the best comment' });
+
+    expect(wallRegion.getAttribute('style')).toContain('260px');
+    expect(composerRegion).toHaveStyle({ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 260px)' });
+    expect(container.querySelectorAll('.overflow-y-auto')).toHaveLength(0);
   });
 });

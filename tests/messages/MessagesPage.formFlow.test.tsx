@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MessagesPage } from '../../src/pages/MessagesPage/MessagesPages';
-import { createMessageCards } from './fixtures/messagePage.fixtures';
+import { createMessageCards, createStickyComposerViewport } from './fixtures/messagePage.fixtures';
 
 const useGuestMessageFormMock = vi.fn();
 const useMessageWallMock = vi.fn();
@@ -57,10 +57,7 @@ describe('MessagesPage form flow', () => {
       reload: reloadMock,
     });
 
-    useStickyComposerViewportMock.mockReturnValue({
-      composerBottom: 'calc(env(safe-area-inset-bottom, 0px) + 0px)',
-      keyboardInset: 0,
-    });
+    useStickyComposerViewportMock.mockReturnValue(createStickyComposerViewport());
   });
 
   it('refreshes the wall after a successful submit', async () => {
@@ -124,5 +121,36 @@ describe('MessagesPage form flow', () => {
     renderPage();
 
     expect(screen.getByRole('status')).toHaveTextContent('Your message is on the wall!');
+  });
+
+  it('toggles the composer between expanded and collapsed states', async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    const collapseToggle = screen.getByRole('button', { name: 'Collapse card' });
+    await user.click(collapseToggle);
+
+    const expandToggle = screen.getByRole('button', { name: 'Expand card' });
+    expect(expandToggle).toHaveAttribute('aria-expanded', 'false');
+    expect(document.getElementById('message-composer-panel')).toHaveClass('hidden');
+
+    await user.click(expandToggle);
+    expect(screen.getByRole('button', { name: 'Collapse card' })).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('preserves draft values after collapsing and re-expanding the composer', async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    const nameInput = screen.getByLabelText('Your name') as HTMLInputElement;
+    const messageInput = screen.getByLabelText('Your message') as HTMLTextAreaElement;
+    expect(nameInput.value).toBe('Alex1');
+    expect(messageInput.value).toContain('Good luck');
+
+    await user.click(screen.getByRole('button', { name: 'Collapse card' }));
+    await user.click(screen.getByRole('button', { name: 'Expand card' }));
+
+    expect((screen.getByLabelText('Your name') as HTMLInputElement).value).toBe('Alex1');
+    expect((screen.getByLabelText('Your message') as HTMLTextAreaElement).value).toContain('Good luck');
   });
 });

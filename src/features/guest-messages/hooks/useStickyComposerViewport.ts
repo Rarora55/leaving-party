@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 const SAFE_AREA_INSET_BOTTOM = 'env(safe-area-inset-bottom, 0px)';
+const KEYBOARD_INSET_THRESHOLD = 56;
 
 export function useStickyComposerViewport() {
   const [keyboardInset, setKeyboardInset] = useState(0);
@@ -10,25 +11,36 @@ export function useStickyComposerViewport() {
       return;
     }
 
+    let frameId: number | null = null;
+
     const updateKeyboardInset = () => {
-      if (!window.visualViewport) {
-        setKeyboardInset(0);
-        return;
+      if (frameId !== null) {
+        cancelAnimationFrame(frameId);
       }
 
-      const { height, offsetTop } = window.visualViewport;
-      const inset = Math.max(0, window.innerHeight - (height + offsetTop));
-      setKeyboardInset(inset);
+      frameId = requestAnimationFrame(() => {
+        if (!window.visualViewport) {
+          setKeyboardInset(0);
+          return;
+        }
+
+        const { height, offsetTop } = window.visualViewport;
+        const rawInset = Math.max(0, window.innerHeight - (height + offsetTop));
+        const normalizedInset = rawInset >= KEYBOARD_INSET_THRESHOLD ? rawInset : 0;
+        setKeyboardInset(normalizedInset);
+      });
     };
 
-    updateKeyboardInset();
-
     const visualViewport = window.visualViewport;
-    visualViewport?.addEventListener('resize', updateKeyboardInset);
-    visualViewport?.addEventListener('scroll', updateKeyboardInset);
-    window.addEventListener('resize', updateKeyboardInset);
+    updateKeyboardInset();
+    visualViewport?.addEventListener('resize', updateKeyboardInset, { passive: true });
+    visualViewport?.addEventListener('scroll', updateKeyboardInset, { passive: true });
+    window.addEventListener('resize', updateKeyboardInset, { passive: true });
 
     return () => {
+      if (frameId !== null) {
+        cancelAnimationFrame(frameId);
+      }
       visualViewport?.removeEventListener('resize', updateKeyboardInset);
       visualViewport?.removeEventListener('scroll', updateKeyboardInset);
       window.removeEventListener('resize', updateKeyboardInset);

@@ -48,7 +48,7 @@ export function HomeFooterScene({
   return (
     <div
       className={cn(
-        'relative isolate flex w-full items-end overflow-hidden',
+        'relative isolate flex w-full items-end overflow-x-clip overflow-y-hidden',
         config.minHeight,
         config.bottomInset,
       )}

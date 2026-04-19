@@ -77,7 +77,7 @@ export function HomeFooter({
 
   return (
     <section
-      className="relative flex w-full items-end overflow-hidden"
+      className="relative flex w-full items-end overflow-x-clip overflow-y-hidden"
       aria-labelledby="home-footer-scene-heading"
     >
       <h2 id="home-footer-scene-heading" className="sr-only">

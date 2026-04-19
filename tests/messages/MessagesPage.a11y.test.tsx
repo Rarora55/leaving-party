@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MessagesPage } from '../../src/pages/MessagesPage/MessagesPages';
-import { createMessageCards } from './fixtures/messagePage.fixtures';
+import { createMessageCards, createStickyComposerViewport } from './fixtures/messagePage.fixtures';
 
 const useGuestMessageFormMock = vi.fn();
 const useMessageWallMock = vi.fn();
@@ -50,10 +51,7 @@ describe('MessagesPage accessibility states', () => {
       reload: vi.fn(),
     });
 
-    useStickyComposerViewportMock.mockReturnValue({
-      composerBottom: 'calc(env(safe-area-inset-bottom, 0px) + 0px)',
-      keyboardInset: 0,
-    });
+    useStickyComposerViewportMock.mockReturnValue(createStickyComposerViewport());
   });
 
   it('announces validation errors inline and links them to fields', () => {
@@ -83,15 +81,26 @@ describe('MessagesPage accessibility states', () => {
     expect(screen.getAllByRole('alert')).toHaveLength(2);
   });
 
-  it('keeps composer scrollable when the keyboard is open', () => {
-    useStickyComposerViewportMock.mockReturnValue({
-      composerBottom: 'calc(env(safe-area-inset-bottom, 0px) + 260px)',
-      keyboardInset: 260,
-    });
+  it('announces and toggles composer expand/collapse state accessibly', async () => {
+    const user = userEvent.setup();
+    useStickyComposerViewportMock.mockReturnValue(
+      createStickyComposerViewport({
+        composerBottom: 'calc(env(safe-area-inset-bottom, 0px) + 260px)',
+        keyboardInset: 260,
+      }),
+    );
 
     renderPage();
 
-    const formHeading = screen.getByRole('heading', { name: 'We will buy a beer to the best comment' });
-    expect(formHeading.closest('div')).toHaveClass('max-h-[75svh]');
+    const toggle = screen.getByRole('button', { name: 'Collapse card' });
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    expect(toggle).toHaveTextContent('↓');
+
+    await user.click(toggle);
+
+    const expandedToggle = screen.getByRole('button', { name: 'Expand card' });
+    expect(expandedToggle).toHaveAttribute('aria-expanded', 'false');
+    expect(expandedToggle).toHaveTextContent('↑');
+    expect(document.getElementById('message-composer-panel')).toHaveClass('hidden');
   });
 });

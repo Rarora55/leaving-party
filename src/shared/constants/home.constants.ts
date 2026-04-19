@@ -85,7 +85,7 @@ const HOME_FOOTER_LAYER_OFFSETS: Record<
 const HOME_FOOTER_FRAME_WIDTHS = {
   compact: '100%',
   desktop: '100%',
-  mobile: '172%',
+  mobile: '208%',
   tablet: '128%',
 } as const;
 

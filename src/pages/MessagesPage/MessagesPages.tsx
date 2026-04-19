@@ -25,6 +25,7 @@ export function MessagesPage() {
   const { composerBottom, keyboardInset } = useStickyComposerViewport();
   const composerRef = useRef<HTMLDivElement | null>(null);
   const [composerHeight, setComposerHeight] = useState(0);
+  const [isComposerCollapsed, setIsComposerCollapsed] = useState(false);
 
   useEffect(() => {
     const composerElement = composerRef.current;
@@ -60,10 +61,15 @@ export function MessagesPage() {
     return success;
   };
 
+  const handleToggleComposer = () => {
+    setIsComposerCollapsed((current) => !current);
+  };
+
+  const composerMinHeight = isComposerCollapsed ? 96 : 320;
   const wallPaddingBottom = useMemo(
     () =>
-      `calc(${Math.max(composerHeight, 320)}px + env(safe-area-inset-bottom, 0px) + ${keyboardInset}px + 1rem)`,
-    [composerHeight, keyboardInset],
+      `calc(${Math.max(composerHeight, composerMinHeight)}px + env(safe-area-inset-bottom, 0px) + ${keyboardInset}px + 1rem)`,
+    [composerHeight, composerMinHeight, keyboardInset],
   );
 
   return (
@@ -115,9 +121,10 @@ export function MessagesPage() {
             message={message}
             errors={errors}
             maxLength={MESSAGE_MAX_LENGTH}
-            isKeyboardOpen={keyboardInset > 0}
+            isComposerCollapsed={isComposerCollapsed}
             onGuestNameChange={setGuestName}
             onMessageChange={setMessage}
+            onToggleComposer={handleToggleComposer}
             onSubmit={handleSubmit}
             successMessage={successMessage}
             isSubmitting={isSubmitting}

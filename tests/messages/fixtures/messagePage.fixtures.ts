@@ -1,5 +1,10 @@
 import type { MessageCard } from '../../../src/shared/types/site.types';
 
+interface StickyComposerViewportFixture {
+  composerBottom: string;
+  keyboardInset: number;
+}
+
 export function createMessageCard(overrides: Partial<MessageCard> = {}): MessageCard {
   return {
     id: 'msg-1',
@@ -21,4 +26,14 @@ export function createMessageCards(count: number): MessageCard[] {
       createdAt: new Date(2026, 3, 15, 10, index).toISOString(),
     }),
   );
+}
+
+export function createStickyComposerViewport(
+  overrides: Partial<StickyComposerViewportFixture> = {},
+): StickyComposerViewportFixture {
+  return {
+    composerBottom: 'calc(env(safe-area-inset-bottom, 0px) + 0px)',
+    keyboardInset: 0,
+    ...overrides,
+  };
 }
