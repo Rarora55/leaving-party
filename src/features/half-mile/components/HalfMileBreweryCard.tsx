@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import popupAsset from '../../../../Components/Popup/Popup.png';
+import popupAsset from '../../../../Components/PopUP/Popup.png';
 import { HOME_SURFACE_TOKENS } from '../../../shared/constants/home.constants';
 import type { HalfMileBrewery } from '../../../shared/types/site.types';
 import { cn } from '../../../shared/utils/cn';

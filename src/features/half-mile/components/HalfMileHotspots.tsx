@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import starAsset from '../../../../Components/Popup/star.png';
+import starAsset from '../../../../Components/PopUP/star.png';
 import type { HalfMileBrewery } from '../../../shared/types/site.types';
 import { cn } from '../../../shared/utils/cn';
 import { HalfMileBreweryCard } from './HalfMileBreweryCard';
