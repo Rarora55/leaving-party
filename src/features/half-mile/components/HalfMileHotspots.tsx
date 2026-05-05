@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import starAsset from '../../../../Components/Popup/star.png';
 import type { HalfMileBrewery } from '../../../shared/types/site.types';
 import { cn } from '../../../shared/utils/cn';
 import { HalfMileBreweryCard } from './HalfMileBreweryCard';
@@ -9,6 +10,7 @@ interface HalfMileHotspotsProps {
 
 export function HalfMileHotspots({ breweries }: HalfMileHotspotsProps) {
   const [activeBreweryId, setActiveBreweryId] = useState<string | null>(null);
+  const [lastTriggerElement, setLastTriggerElement] = useState<HTMLButtonElement | null>(null);
 
   const activeBrewery = useMemo(() => {
     return breweries.find((brewery) => brewery.id === activeBreweryId) ?? null;
@@ -19,40 +21,25 @@ export function HalfMileHotspots({ breweries }: HalfMileHotspotsProps) {
       return;
     }
 
-    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
-      const target = event.target as HTMLElement | null;
-
-      if (!target) {
-        return;
-      }
-
-      if (target.closest('[data-half-mile-card="true"]')) {
-        return;
-      }
-
-      if (target.closest('[data-half-mile-hotspot="true"]')) {
-        return;
-      }
-
-      setActiveBreweryId(null);
-    };
-
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setActiveBreweryId(null);
+        closePopup();
       }
     };
 
-    document.addEventListener('mousedown', handlePointerDown);
-    document.addEventListener('touchstart', handlePointerDown);
     document.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      document.removeEventListener('mousedown', handlePointerDown);
-      document.removeEventListener('touchstart', handlePointerDown);
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [activeBreweryId]);
+
+  const closePopup = () => {
+    setActiveBreweryId(null);
+    if (lastTriggerElement && document.contains(lastTriggerElement)) {
+      lastTriggerElement.focus();
+    }
+  };
 
   return (
     <div className="absolute inset-0 z-30" data-testid="half-mile-hotspot-layer">
@@ -69,7 +56,10 @@ export function HalfMileHotspots({ breweries }: HalfMileHotspotsProps) {
             data-testid={`hotspot-${brewery.id}`}
             aria-label={`Open ${brewery.name} details`}
             aria-expanded={isActive}
-            onClick={() => setActiveBreweryId(brewery.id)}
+            onClick={(event) => {
+              setLastTriggerElement(event.currentTarget);
+              setActiveBreweryId(brewery.id);
+            }}
             onKeyDown={(event) => {
               if (
                 event.key === 'Enter'
@@ -78,6 +68,7 @@ export function HalfMileHotspots({ breweries }: HalfMileHotspotsProps) {
                 || event.key === 'Spacebar'
               ) {
                 event.preventDefault();
+                setLastTriggerElement(event.currentTarget);
                 setActiveBreweryId(brewery.id);
               }
             }}
@@ -94,6 +85,14 @@ export function HalfMileHotspots({ breweries }: HalfMileHotspotsProps) {
             }}
           >
             <span className="sr-only">{brewery.name}</span>
+            {brewery.id === 'signature-brew' ? (
+              <img
+                src={starAsset}
+                alt=""
+                aria-hidden="true"
+                className="pointer-events-none absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 object-contain"
+              />
+            ) : null}
           </button>
         );
       })}
@@ -101,7 +100,7 @@ export function HalfMileHotspots({ breweries }: HalfMileHotspotsProps) {
       {activeBrewery ? (
         <HalfMileBreweryCard
           brewery={activeBrewery}
-          onClose={() => setActiveBreweryId(null)}
+          onClose={closePopup}
         />
       ) : null}
     </div>

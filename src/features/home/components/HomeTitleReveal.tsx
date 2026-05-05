@@ -116,6 +116,32 @@ export function HomeTitleReveal({
         >
           {config.subtitle}
         </motion.p>
+        <motion.p
+          className="text-balance text-center font-medium leading-tight"
+          style={{
+            color: config.subtitleColor,
+            fontSize: `clamp(${config.subtitleSizeMobile}px, 2.4vw, ${config.subtitleSizeDesktop - 1}px)`,
+            letterSpacing: '-0.01em',
+            marginTop: 10,
+            opacity: dateOpacity,
+            y: dateY,
+          }}
+        >
+          We'll be there at <span className="text-red-600">5:00 PM</span>
+        </motion.p>
+        <motion.p
+          className="text-balance text-center font-medium leading-tight"
+          style={{
+            color: config.subtitleColor,
+            fontSize: `clamp(${config.subtitleSizeMobile}px, 2.3vw, ${config.subtitleSizeDesktop - 2}px)`,
+            letterSpacing: '-0.01em',
+            marginTop: 6,
+            opacity: dateOpacity,
+            y: dateY,
+          }}
+        >
+          Unit 15, Blackhorse Ln, London E17 5QJ
+        </motion.p>
         <motion.div
           className="mt-5 flex justify-center sm:hidden"
           style={{ opacity: dateOpacity, y: dateY }}

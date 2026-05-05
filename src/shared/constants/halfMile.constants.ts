@@ -133,8 +133,8 @@ export const HALF_MILE_SCENE_CONFIG: HalfMileSceneConfig = {
       hotspot: {
         xPercent: 35.3,
         yPercent: 43.5,
-        radiusPxMobile: 14,
-        radiusPxDesktop: 16,
+        radiusPxMobile: 16,
+        radiusPxDesktop: 18,
       },
     },
     {
