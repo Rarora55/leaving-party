@@ -60,7 +60,7 @@ export function HomeEntryPopup({ onClose }: HomeEntryPopupProps) {
           <button
             type="button"
             onClick={onClose}
-            className="absolute bottom-[9%] right-[14%] rounded-md border-2 border-dashed border-ink/35 bg-transparent px-7 py-2 text-base font-semibold text-transparent transition hover:bg-black hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/40"
+            className="absolute bottom-[12%] right-[9%] sm:bottom-[9%] sm:right-[14%] rounded-md border-2 border-dashed border-ink/35 bg-transparent px-7 py-2 text-base font-semibold text-transparent transition hover:bg-black hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/40"
           >
             Got it
           </button>

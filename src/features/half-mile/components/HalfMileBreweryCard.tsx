@@ -57,7 +57,7 @@ export function HalfMileBreweryCard({
           <button
             type="button"
             onClick={onClose}
-            className="absolute bottom-[8%] right-[14%] rounded-md border-2 border-dashed border-ink/35 bg-transparent px-5 py-3 text-base font-semibold text-transparent transition hover:bg-black hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/40"
+            className="absolute bottom-[12%] right-[9%] sm:bottom-[8%] sm:right-[14%] rounded-md border-2 border-dashed border-ink/35 bg-transparent px-5 py-3 text-base font-semibold text-transparent transition hover:bg-black hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/40"
           >
             Got it
           </button>
